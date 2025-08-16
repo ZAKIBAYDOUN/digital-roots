@@ -1,37 +1,19 @@
-import os, glob
+import os
 from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_openai import OpenAIEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 
-DATA_DIR = os.getenv("PLAN_DATA_DIR", "data")
+PLAN_DATA_DIR = os.getenv("PLAN_DATA_DIR", "data")
+DOCS = [f for f in os.listdir(PLAN_DATA_DIR) if f.endswith((".pdf", ".docx"))]
 
-def discover_docs():
-    patterns = ["*.pdf", "*.docx", "*.doc"]
-    files = []
-    for pat in patterns:
-        files += glob.glob(os.path.join(DATA_DIR, pat))
-    if not files:
-        raise SystemExit(f"No plan files found in {DATA_DIR}/ — copy Strategic Plan, Appendix A, exec summaries, SHA there.")
-    return files
+docs = []
+for f in DOCS:
+    path = os.path.join(PLAN_DATA_DIR, f)
+    docs += (PyPDFLoader(path).load() if f.endswith(".pdf") else Docx2txtLoader(path).load())
 
-def load_docs(paths):
-    docs=[]
-    for p in paths:
-        if p.lower().endswith(".pdf"):
-            docs += PyPDFLoader(p).load()
-        else:
-            docs += Docx2txtLoader(p).load()
-    return docs
-
-def split_docs(docs):
-    return RecursiveCharacterTextSplitter(chunk_size=1100, chunk_overlap=150).split_documents(docs)
-
-if __name__ == "__main__":
-    assert os.environ.get("OPENAI_API_KEY"), "Set OPENAI_API_KEY"
-    files = discover_docs()
-    docs = load_docs(files)
-    chunks = split_docs(docs)
-    vs = FAISS.from_documents(chunks, OpenAIEmbeddings())
-    vs.save_local("vectorstore")
-    print(f"Indexed → ./vectorstore  (files: {len(files)})")
+splits = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=150).split_documents(docs)
+embed = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+vs = FAISS.from_documents(splits, embed)
+vs.save_local("vectorstore")
+print(f"Indexed → ./vectorstore  (files: {len(DOCS)})")

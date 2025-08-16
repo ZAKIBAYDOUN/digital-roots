@@ -4,11 +4,10 @@
     "langchain_community",
     "faiss-cpu",
     "./graphs",
-    "./ingest",
-    "./apps"
+    "./config"
   ],
   "graphs": {
-    "ghc_dt": "./graphs/ghc_dt/entry.py:graph"
+    "ghc": "./graphs/ghc_dt/entry.py:graph"
   },
   "env": ".env"
 }

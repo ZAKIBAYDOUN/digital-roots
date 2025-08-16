@@ -1,8 +1,8 @@
 langgraph
 langchain-openai
 langchain-community
-langgraph-sdk
 faiss-cpu
 pypdf
 docx2txt
 streamlit
+sentence-transformers

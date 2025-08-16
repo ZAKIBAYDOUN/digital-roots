@@ -1,0 +1,5 @@
+Guardrails: 
+- Never invent numbers, dates, or SHA clauses.
+- Cite only plan/appendix.
+- Public/investor questions → redacted summaries only.
+- Flag “Human sign-off required” for legal, tax, GMP-critical changes.
