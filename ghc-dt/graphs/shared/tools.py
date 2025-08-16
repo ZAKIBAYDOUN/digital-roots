@@ -1,12 +1,25 @@
+import os
+from pathlib import Path
+
+from dotenv import load_dotenv
 from langchain_community.vectorstores import FAISS
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_openai import OpenAIEmbeddings
 from langchain_core.tools import tool
 
-VS_DIR = "vectorstore"
+load_dotenv()
+if not os.getenv("OPENAI_API_KEY"):
+    raise EnvironmentError("OPENAI_API_KEY not found. Please set before ingestion.")
+
+VS_DIR = Path(__file__).resolve().parent / "vectorstore"
+
 
 def _vs():
-    embed = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-    return FAISS.load_local(VS_DIR, embed, allow_dangerous_deserialization=True)
+    """Load the persisted FAISS vector store using OpenAI embeddings."""
+    return FAISS.load_local(
+        str(VS_DIR),
+        OpenAIEmbeddings(model="text-embedding-3-small"),
+        allow_dangerous_deserialization=True,
+    )
 
 @tool
 def ghc_docs(query: str) -> str:
