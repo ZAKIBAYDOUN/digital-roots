@@ -1,0 +1,12 @@
+sources:
+  - ./docs/plan
+  - ./docs/annexes
+  - ./docs/legal
+  - ./docs/finance
+extensions: [".pdf", ".docx", ".doc", ".xlsx", ".xls", ".png", ".jpg", ".jpeg", ".tif", ".tiff"]
+chunk_tokens: 800
+manifest: .ingest/manifest.json
+
+primary:
+  collection: gh_plan_A
+  persist_directory: ./vector_store/store_A

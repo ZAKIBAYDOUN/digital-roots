@@ -3,7 +3,15 @@ langgraph>=0.2.5
 langchain-openai
 langchain-huggingface
 langchain-chroma
-chromadb
+chromadb==0.5.5
 sentence-transformers
 fastapi
 uvicorn
+PyMuPDF==1.24.9            # pdf
+python-docx==1.1.2         # docx
+mammoth==1.8.0             # legacy .doc via DOCX conversion (best-effort)
+openpyxl==3.1.5            # xlsx reader
+pandas==2.2.2              # tabular to text summaries
+pillow==10.4.0             # image IO
+pytesseract==0.3.13        # OCR (requires tesseract binary installed)
+pyyaml==6.0.2
