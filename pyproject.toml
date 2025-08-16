@@ -1,0 +1,21 @@
+[project]
+name = "green-hill-app"
+version = "0.1.0"
+description = "Green Hill Canarias Digital Twin (LangGraph multi-agent app)"
+readme = "README.md"
+requires-python = ">=3.11"
+
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "."}
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+namespaces = false
+
+[tool.setuptools.package-data]
+app = ["**/*"]

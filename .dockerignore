@@ -1,0 +1,38 @@
+# Keep Docker builds lean and avoid large file uploads
+
+# Vector stores and local data
+vector_store/
+vector_store_upload/
+chroma_db/
+*.sqlite3
+*.bin
+*.pickle
+
+# Source documents
+/docs/
+*.pdf
+*.docx
+*.xlsx
+
+# Python cache & envs
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.env
+.env.*
+.env.local
+.envrc
+venv/
+.venv/
+
+# Tooling & editor
+.vscode/
+.idea/
+.DS_Store
+*.swp
+*.swo
+*~
+
+test_results_*.json

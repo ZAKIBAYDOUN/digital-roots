@@ -1,0 +1,96 @@
+{
+  "simple": [
+    {
+      "scenario": "Basic Strategy Query",
+      "success": true,
+      "execution_time": 0.4852612018585205,
+      "keyword_score": 1.0,
+      "answer_length": 856,
+      "has_error": false,
+      "green_hill_response": false
+    },
+    {
+      "scenario": "Financial Planning",
+      "success": true,
+      "execution_time": 0.0013782978057861328,
+      "keyword_score": 0.75,
+      "answer_length": 854,
+      "has_error": false,
+      "green_hill_response": false
+    },
+    {
+      "scenario": "Market Analysis",
+      "success": true,
+      "execution_time": 0.0012526512145996094,
+      "keyword_score": 1.0,
+      "answer_length": 857,
+      "has_error": false,
+      "green_hill_response": false
+    },
+    {
+      "scenario": "Risk Assessment",
+      "success": true,
+      "execution_time": 0.0013196468353271484,
+      "keyword_score": 0.25,
+      "answer_length": 851,
+      "has_error": false,
+      "green_hill_response": false
+    },
+    {
+      "scenario": "Innovation Focus",
+      "success": true,
+      "execution_time": 0.0014009475708007812,
+      "keyword_score": 1.0,
+      "answer_length": 854,
+      "has_error": false,
+      "green_hill_response": false
+    }
+  ],
+  "multi_agent": [
+    {
+      "scenario": "Basic Strategy Query",
+      "success": true,
+      "execution_time": 0.004381895065307617,
+      "keyword_score": 1.0,
+      "answer_length": 1822,
+      "has_error": false,
+      "green_hill_response": false
+    },
+    {
+      "scenario": "Financial Planning",
+      "success": true,
+      "execution_time": 0.003499269485473633,
+      "keyword_score": 1.0,
+      "answer_length": 1820,
+      "has_error": false,
+      "green_hill_response": false
+    },
+    {
+      "scenario": "Market Analysis",
+      "success": true,
+      "execution_time": 0.003706216812133789,
+      "keyword_score": 1.0,
+      "answer_length": 1823,
+      "has_error": false,
+      "green_hill_response": false
+    },
+    {
+      "scenario": "Risk Assessment",
+      "success": true,
+      "execution_time": 0.003126859664916992,
+      "keyword_score": 0.5,
+      "answer_length": 1817,
+      "has_error": false,
+      "green_hill_response": false
+    },
+    {
+      "scenario": "Innovation Focus",
+      "success": true,
+      "execution_time": 0.0033605098724365234,
+      "keyword_score": 1.0,
+      "answer_length": 1820,
+      "has_error": false,
+      "green_hill_response": false
+    }
+  ]
+}

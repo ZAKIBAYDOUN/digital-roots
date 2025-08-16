@@ -1,0 +1,10 @@
+{
+  "dependencies": [
+    "langgraph",
+    "pydantic"
+  ],
+  "graphs": {
+    "ghc_simple": "./simple_main.py:app"
+  },
+  "python_version": "3.11"
+}
