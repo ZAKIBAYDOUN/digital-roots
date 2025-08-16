@@ -1,0 +1,14 @@
+{
+  "dependencies": [
+    "langchain_openai",
+    "langchain_community",
+    "faiss-cpu",
+    "./graphs",
+    "./ingest",
+    "./apps"
+  ],
+  "graphs": {
+    "ghc_dt": "./graphs/ghc_dt/entry.py:graph"
+  },
+  "env": ".env"
+}
