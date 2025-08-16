@@ -1,5 +1,5 @@
 # === Dual Ingest for Green Hill Plans A & B ===
-import os, glob, uuid, json, chromadb
+import os, glob, uuid, json, chromadb, logging
 from chromadb.utils import embedding_functions
 
 
@@ -19,9 +19,21 @@ def read_txt(p):
     return open(p, "r", encoding="utf-8", errors="ignore").read()
 
 
-def extract(p):
+def extract_file_text(p):
     e = os.path.splitext(p)[1].lower()
-    return read_docx(p) if e == ".docx" else read_pdf(p) if e == ".pdf" else read_txt(p) if e in (".txt", ".md") else ""
+    try:
+        return (
+            read_docx(p)
+            if e == ".docx"
+            else read_pdf(p)
+            if e == ".pdf"
+            else read_txt(p)
+            if e in (".txt", ".md")
+            else ""
+        )
+    except Exception as err:
+        logging.error("Failed to extract %s: %s", p, err)
+        raise
 
 
 def ingest(plan_dir, store_dir, collection, model="text-embedding-3-small"):
@@ -40,7 +52,7 @@ def ingest(plan_dir, store_dir, collection, model="text-embedding-3-small"):
     chunks, metas = [], []
     for fp in files:
         try:
-            t = extract(fp)
+            t = extract_file_text(fp)
         except Exception as e:
             print("WARN skip", fp, ":", e)
             continue
