@@ -9,10 +9,49 @@ def read_docx(p):
     return "\n".join(x.text for x in d.paragraphs)
 
 
-def read_pdf(p):
-    import pypdf
-    r = pypdf.PdfReader(open(p, "rb"))
-    return "\n".join((pg.extract_text() or "") for pg in r.pages)
+def read_pdf(p, ocr_lang: str = "eng"):
+    """Extract text from a PDF file with graceful fallbacks.
+
+    The previous implementation relied solely on ``pypdf`` which fails for
+    image-based PDFs.  This version first attempts to use ``PyMuPDF`` for
+    high-quality text extraction and falls back to OCR (``pytesseract``) when
+    a page contains no text.  If PyMuPDF is unavailable, it falls back to the
+    original ``pypdf`` behaviour.
+    """
+
+    try:  # Preferred extraction via PyMuPDF
+        import fitz  # type: ignore
+        import io
+        from PIL import Image
+        try:
+            import pytesseract
+            ocr_available = True
+        except Exception:  # pragma: no cover - optional dependency
+            pytesseract = None
+            ocr_available = False
+
+        doc = fitz.open(p)
+        parts = []
+        for page in doc:
+            txt = page.get_text("text") or ""
+            if not txt.strip() and ocr_available:
+                try:
+                    pix = page.get_pixmap(dpi=200)
+                    img = Image.open(io.BytesIO(pix.tobytes()))
+                    txt = pytesseract.image_to_string(img, lang=ocr_lang)
+                except Exception:
+                    txt = ""
+            parts.append(txt)
+        text = "\n".join(parts)
+        if text.strip():
+            return text
+    except Exception:
+        pass  # Fall back to pypdf
+
+    import pypdf  # fallback extractor
+    with open(p, "rb") as fh:
+        reader = pypdf.PdfReader(fh)
+        return "\n".join((pg.extract_text() or "") for pg in reader.pages)
 
 
 def read_txt(p):
