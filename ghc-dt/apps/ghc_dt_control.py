@@ -13,7 +13,7 @@ client = get_sync_client(url=BASE, api_key=API_KEY)
 st.title("Green Hill CEO Digital Twin (GHC-DT)")
 msg = st.text_area("Message", "/brief Summarize EU-GMP readiness with citations.")
 if st.button("Run"):
-    a = client.assistants.search(graph_id="ghc_dt", limit=1)[0]
+    a = client.assistants.search(graph_id="ghc", limit=1)[0]
     t = client.threads.create(metadata={"audience":"internal"})
     with st.status("Streaming…"):
         for ev in client.runs.stream(

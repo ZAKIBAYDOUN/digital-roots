@@ -9,9 +9,9 @@ class S(TypedDict):
 def _node(state: S):
     agent = build_agent()
     res = agent.invoke(state)
-    return {"messages": res["messages"] if "messages" in res else res}
+    return {"messages": res["messages"]}
 
 graph = StateGraph(S)
-graph.add_node("ghc_dt", _node)
-graph.add_edge(START, "ghc_dt")
+graph.add_node("ghc", _node)
+graph.add_edge(START, "ghc")
 graph = graph.compile(checkpointer=InMemorySaver())
