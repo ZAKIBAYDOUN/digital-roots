@@ -166,11 +166,60 @@ class DocumentStore:
         return self.add_texts(texts, metas, ids)
 
 
+def _load_pdf_with_fallback(path: str, ocr_lang: str = "eng"):
+    """Load a PDF, attempting OCR if necessary.
+
+    The default :class:`PyPDFLoader` fails on image-based PDFs.  This helper
+    tries it first for efficiency and falls back to a PyMuPDF + Tesseract
+    pipeline when no text is extracted.  As a last resort it returns an empty
+    list so callers can handle the failure gracefully.
+    """
+
+    try:
+        from langchain_community.document_loaders import PyPDFLoader
+        docs = PyPDFLoader(path).load()
+        if any(d.page_content.strip() for d in docs):
+            return docs
+    except Exception:
+        pass
+
+    try:
+        import fitz  # PyMuPDF
+        import io
+        from PIL import Image
+        try:
+            import pytesseract
+            ocr_ok = True
+        except Exception:  # pragma: no cover - optional dep
+            pytesseract = None
+            ocr_ok = False
+
+        doc = fitz.open(path)
+        parts = []
+        for page in doc:
+            txt = page.get_text("text") or ""
+            if not txt.strip() and ocr_ok:
+                try:
+                    pix = page.get_pixmap(dpi=200)
+                    img = Image.open(io.BytesIO(pix.tobytes()))
+                    txt = pytesseract.image_to_string(img, lang=ocr_lang)
+                except Exception:
+                    txt = ""
+            parts.append(txt)
+        text = "\n".join(parts).strip()
+        if text:
+            from langchain.schema import Document
+            return [Document(page_content=text, metadata={"source": os.path.basename(path)})]
+    except Exception:
+        pass
+
+    return []
+
+
 def ingest_canonical_docs(doc_paths: List[str], persist_dir: str):
     """Ingest explicit file paths into a Chroma vector store."""
     try:
         from langchain_community.document_loaders import (
-            PyPDFLoader,
             Docx2txtLoader,
             UnstructuredExcelLoader,
             TextLoader,
@@ -187,7 +236,7 @@ def ingest_canonical_docs(doc_paths: List[str], persist_dir: str):
             continue
         try:
             if p.lower().endswith(".pdf"):
-                docs.extend(PyPDFLoader(p).load())
+                docs.extend(_load_pdf_with_fallback(p))
             elif p.lower().endswith(".docx"):
                 docs.extend(Docx2txtLoader(p).load())
             elif p.lower().endswith((".xlsx", ".xls")):
