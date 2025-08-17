@@ -85,7 +85,7 @@ with tab1:
             "answer": answer,
             "refs": resp.get("refs",[]) if isinstance(resp, dict) else []
         })
-        st.experimental_rerun()
+        st.rerun()
 
 with tab2:
     st.header("Tasks & Actions")
