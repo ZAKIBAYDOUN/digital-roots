@@ -17,7 +17,7 @@ entrypoint:
     $env:GH_PERSIST="{{env.GH_PERSIST}}"
     $env:GH_COLLECTION="{{env.GH_COLLECTION}}"
     $env:GH_EMBED_MODEL="{{env.GH_EMBED_MODEL}}"
-    python -m streamlit run app.py --server.address {{env.BIND}} --server.port {{env.PORT}}
+    python -m streamlit run streamlit_app.py --server.address {{env.BIND}} --server.port {{env.PORT}}
 
 persistence:
   - path: "{{env.GH_PERSIST}}"

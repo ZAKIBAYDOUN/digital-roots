@@ -18,7 +18,7 @@ while ($true) {
   try {
     Write-Host "Starting GHC hub on http://$($env:BIND):$($env:PORT) ..."
     # Always run via 'python -m streamlit' to avoid PATH issues
-    python -m streamlit run .\app.py --server.address $env:BIND --server.port $env:PORT *>&1 |
+    python -m streamlit run .\streamlit_app.py --server.address $env:BIND --server.port $env:PORT *>&1 |
       Tee-Object -FilePath "$env:LOCALAPPDATA\ghc-hub.log"
   } catch {
     Write-Warning "Hub crashed: $($_.Exception.Message)"
