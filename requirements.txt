@@ -8,3 +8,26 @@ langchain
 langchain-core
 langchain-community
 langchain-text-splitters
+# Multimedia & AI
+openai-whisper
+speechrecognition
+pyaudio
+pillow
+opencv-python-headless
+streamlit-webrtc
+# OCR & Vision
+pytesseract
+easyocr
+# Web scraping & research
+requests
+beautifulsoup4
+selenium
+duckduckgo-search
+# Image processing
+torch
+torchvision
+transformers
+# Audio processing
+soundfile
+librosa
+pydub
