@@ -1,4 +1,12 @@
 {
-  "logs": [],
-  "pending": []
+  "phase": "Phase I — Pilot & Shadow Mode",
+  "approver": "CEO",
+  "command_priority": "user_first",
+  "last_actions": [],
+  "pending_approvals": [],
+  "key_dates": {
+    "zec_filing": "",
+    "gmp_dossier": "",
+    "cash_buffer_to": ""
+  }
 }

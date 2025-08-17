@@ -1,9 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
-if [ ! -d "venv" ]; then
-  python -m venv venv
-fi
+python3 -m venv venv || true
 source venv/bin/activate
-pip install --upgrade pip
-pip install -U streamlit chromadb sentence-transformers pypdf python-docx pandas
-streamlit run app.py --server.headless true --server.port 8501
+python -m pip install --upgrade pip
+pip install --upgrade streamlit chromadb sentence-transformers pypdf python-docx pandas
+exec streamlit run app.py --server.headless true --server.port 8501
