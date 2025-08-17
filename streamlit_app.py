@@ -44,7 +44,9 @@ def run_command(query: str, mode: str, agent: str):
     try:
         payload = {"question": query, "agent": agent, "command": mode, "state": get_state()}
         result = app.invoke(payload)
-        return {"answer": str(result), "refs": []}
+        # Extract the final_answer from the result instead of stringifying the entire object
+        answer = result.get("final_answer", str(result)) if isinstance(result, dict) else str(result)
+        return {"answer": answer, "refs": []}
     except Exception as e:
         return {"answer": f"Error: {type(e).__name__}", "refs": ["error"]}
 
