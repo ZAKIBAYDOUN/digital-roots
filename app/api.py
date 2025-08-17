@@ -38,7 +38,7 @@ class IngestTextsRequest(BaseModel):
 
 @api.get("/health")
 def health() -> Dict[str, str]:
-    return {"status": "ok"}
+    return {"ok": "ok"}
 
 
 @api.post("/api/twin/query")
