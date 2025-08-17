@@ -6,5 +6,6 @@
     "zec_filing": "",
     "gmp_dossier": "",
     "cash_buffer_to": ""
-  }
+  },
+  "test_key": "test_value"
 }

@@ -2,22 +2,90 @@
 
 A multi-agent LangGraph application with retrieval and memo synthesis. Use the Streamlit UI for an easy start, or call the API directly.
 
-## Quick Start
+## 🚀 Quick Start
 
-1) Local dev – install and run a UI
+### ⚠️ Important: Avoid Common Setup Issues
 
-- Install deps:
-  - pip install -r requirements.txt
-- Start Streamlit (UI):
-  - streamlit run streamlit_app.py --server.address 0.0.0.0 --server.port 8501
-  - Open the forwarded 8501 port in your browser
+**Before you start**: Do NOT copy-paste Python code directly into your bash/terminal. This causes syntax errors like `bash: import: command not found`.
 
-2) Optional: Start the API
+✅ **Correct way**: Run Python code in Python files or Python REPL
+❌ **Wrong way**: Running `import streamlit` directly in bash terminal
 
-- uvicorn app.api:api --host 0.0.0.0 --port 8000
-- GET http://localhost:8000/health
+### 1) Validate Your Setup
 
-3) Minimal environment (low-security)
+```bash
+# Check if everything is properly installed
+python check_setup.py
+```
+
+### 2) Install Dependencies
+
+```bash
+# Install core requirements
+pip install -r requirements.txt
+
+# If you encounter timeout issues, install individually:
+pip install streamlit pandas pillow requests numpy
+```
+
+### 3) Start the Application
+
+```bash
+# Start Streamlit (UI):
+streamlit run streamlit_app.py --server.address 0.0.0.0 --server.port 8501
+# Open the forwarded 8501 port in your browser
+```
+
+### 4) Optional Multimedia Features
+
+Install additional packages for enhanced functionality:
+
+```bash
+# Audio processing (speech-to-text)
+pip install speechrecognition
+
+# OCR (text extraction from images)
+pip install pytesseract
+
+# Web research capabilities  
+pip install duckduckgo-search beautifulsoup4 lxml
+
+# Computer vision
+pip install opencv-python-headless
+```
+
+The application gracefully handles missing optional features and will show which capabilities are available.
+
+### 5) Troubleshooting
+
+If you encounter issues:
+
+1. **Syntax Errors in Terminal**: Don't run Python code directly in bash. Use `python -c "code here"` or save to a `.py` file
+2. **Missing Dependencies**: Run `python check_setup.py` to diagnose issues
+3. **Network Timeouts**: Install packages individually if batch installation fails
+4. **For detailed help**: See `SETUP_GUIDE.md`
+
+## 📋 Features
+
+- ✅ **Multi-Agent Chat**: Always available
+- 🔄 **Audio Processing**: Requires speechrecognition (optional)
+- 🔄 **OCR/Image**: Requires pytesseract (optional)  
+- 🔄 **Web Research**: Requires duckduckgo-search (optional)
+- 🔄 **Computer Vision**: Requires opencv-python-headless (optional)
+
+## 2) Optional: Start the API
+
+## 🔧 API Usage (Optional)
+
+```bash
+# Start the API server
+uvicorn app.api:api --host 0.0.0.0 --port 8000
+
+# Test health endpoint
+curl http://localhost:8000/health
+```
+
+## 🌿 Environment Configuration
 
 - Temporary for shell: `export OPENAI_API_KEY='sk-...'`
 - Persistent for app/Docker: add to `.env` in repo root:
