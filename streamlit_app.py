@@ -6,11 +6,61 @@ import pandas as pd
 STATE_FILE = "state.json"
 LOG_FILE = "evidence.jsonl"
 
+# === CONEXIÓN LANGGRAPH ===
+def _get_langgraph_app():
+    """Importa y retorna la aplicación LangGraph"""
+    try:
+        # Intentar importar desde app.ghc_twin (configurado en langgraph.json)
+        from app.ghc_twin import app
+        return app
+    except ImportError:
+        try:
+            # Fallback: importar desde ghc_twin directamente
+            import ghc_twin
+            return ghc_twin.app
+        except ImportError:
+            return None
+
 def run_command(query: str, mode: str, agent: str):
-    return {
-        "answer": f"[{agent}] {mode} → {query or '(no query)'}",
-        "refs": []
-    }
+    """Ejecuta comando a través de LangGraph o fallback"""
+    app = _get_langgraph_app()
+    
+    if app is None:
+        return {
+            "answer": f"[OFFLINE] {agent} | {mode} → {query or '(no query)'} | LangGraph no disponible",
+            "refs": ["langgraph_offline"]
+        }
+    
+    try:
+        # Payload para LangGraph
+        payload = {
+            "question": query or "",
+            "command": mode,
+            "agent": agent,
+            "state": get_state()
+        }
+        
+        # Invocar LangGraph
+        result = app.invoke(payload)
+        
+        # Normalizar resultado
+        if isinstance(result, dict):
+            answer = result.get("answer") or result.get("output") or result.get("response") or str(result)
+            refs = result.get("refs") or result.get("sources") or result.get("citations") or []
+        else:
+            answer = str(result)
+            refs = []
+            
+        return {
+            "answer": answer,
+            "refs": refs if isinstance(refs, list) else [refs]
+        }
+        
+    except Exception as e:
+        return {
+            "answer": f"[ERROR] {agent} | {mode} → {type(e).__name__}: {str(e)}",
+            "refs": ["langgraph_error"]
+        }
 
 def get_state():
     if os.path.exists(STATE_FILE):
@@ -42,7 +92,13 @@ def append_log(entry: dict):
 
 st.set_page_config(page_title="🌿 Green Hill Cockpit", layout="wide")
 
+# === ESTADO DE CONEXIÓN ===
+app_status = _get_langgraph_app()
+connection_status = "🟢 CONNECTED" if app_status else "🔴 OFFLINE"
+
 st.sidebar.title("⚙️ Control Panel")
+st.sidebar.info(f"LangGraph: {connection_status}")
+
 mode = st.sidebar.radio("Command", ["/brief","/deep","/action","/sync","/evidence","/console"])
 agent = st.sidebar.selectbox("Target Agent", ["CEO-DT","FP&A","QA/Validation","Governance"])
 
@@ -63,6 +119,7 @@ if st.sidebar.button("💾 Save Variables"):
     set_state("key_dates", key_dates)
     st.sidebar.success("State updated")
 
+# === TABS ===
 tab1,tab2,tab3,tab4=st.tabs(["💬 Chat","📋 Actions","📑 Evidence Log","🏛 Governance"])
 
 with tab1:
