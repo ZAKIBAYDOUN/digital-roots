@@ -4,7 +4,8 @@ langchain-openai
 python-dotenv
 langchain-huggingface
 langchain-chroma
-chromadb
+chromadb>=0.5.0
 sentence-transformers
 fastapi
 uvicorn
+streamlit

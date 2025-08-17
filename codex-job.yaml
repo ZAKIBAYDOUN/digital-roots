@@ -1,31 +1,33 @@
-# codex-job.yaml — One-time permanent Codex Agent instruction
-
 name: ghc_streamlit_hub
 version: 1.0
 
-# This tells the Codex agent: always run this Streamlit app, mount the store, and bind gh_plan_A as default memory.
+description: >
+  Run the Green Hill Corpus Hub (Streamlit) as the persistent ingest/memory service.
+  Uses Chroma PersistentClient with local on-disk store. Agent memory = gh_plan_A.
 
-job:
-  description: "Run the Green Hill Corpus Hub visual interface (Streamlit) as permanent ingestion & memory hub."
-  entrypoint:
-    type: process
-    command: ["streamlit", "run", "app.py", "--server.address", "0.0.0.0"]
+env:
+  GH_PERSIST: C:\Users\zakib\OneDrive\Documentos\GitHub\digital-roots\vector_store\store_A
+  GH_COLLECTION: gh_plan_A
+  GH_EMBED_MODEL: sentence-transformers/all-MiniLM-L6-v2
+  PORT: "8501"
+  BIND: 127.0.0.1
 
-  env:
-    GH_PERSIST: "./vector_store/store_A"
-    GH_COLLECTION: "gh_plan_A"
-    GH_EMBED_MODEL: "sentence-transformers/all-MiniLM-L6-v2"
+entrypoint:
+  shell: |
+    $env:GH_PERSIST="{{env.GH_PERSIST}}"
+    $env:GH_COLLECTION="{{env.GH_COLLECTION}}"
+    $env:GH_EMBED_MODEL="{{env.GH_EMBED_MODEL}}"
+    python -m streamlit run app.py --server.address {{env.BIND}} --server.port {{env.PORT}}
 
-  persistence:
-    vector_store: ./vector_store/store_A
-    collection: gh_plan_A
+persistence:
+  - path: "{{env.GH_PERSIST}}"
 
-  security:
-    allow_camera: true
-    allow_file_upload: true
-    allow_paste: true
+healthcheck:
+  type: http
+  url: http://{{env.BIND}}:{{env.PORT}}
+  interval_seconds: 10
+  timeout_seconds: 5
+  retries: 12
 
-  outputs:
-    - url: "http://localhost:8501"  # default Streamlit port
-
-# With this, the Codex agent always runs the hub, keeps gh_plan_A mounted, and you can teach it from files, paste, or camera.
+signals:
+  stop: taskkill /IM python.exe /F
