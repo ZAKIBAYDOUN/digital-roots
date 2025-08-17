@@ -8,16 +8,18 @@ langchain
 langchain-core
 langchain-community
 langchain-text-splitters
-# Multimedia básico
-pillow
+# Multimedia core
+pillow>=8.0.0
 requests
+numpy
 # Audio (opcional)
 speechrecognition
+pyaudio
 # OCR (opcional) 
 pytesseract
 # Web research (opcional)
 duckduckgo-search
 beautifulsoup4
-# Procesamiento adicional (opcional)
+lxml
+# Computer Vision (opcional)
 opencv-python-headless
-numpy
