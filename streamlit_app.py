@@ -9,19 +9,19 @@ LOG_FILE = "evidence.jsonl"
 # === CONFIGURACIÓN LENGUAJE NATURAL ===
 NATURAL_PROMPTS = {
     "CEO-DT": {
-        "system": "Eres el CEO Digital Twin de Green Hill Canarias. Respondes como un ejecutivo experimentado, con lenguaje profesional pero accesible. Enfócate en decisiones estratégicas, oportunidades de negocio y visión a largo plazo.",
+        "system": "Eres el CEO Digital Twin de Green Hill Canarias. Respondes como un ejecutivo experimentado, con lenguaje profesional pero accesible.",
         "style": "Ejecutivo estratégico"
     },
     "FP&A": {
-        "system": "Eres el analista financiero senior de Green Hill Canarias. Hablas con claridad sobre números, proyecciones y métricas financieras. Usa lenguaje preciso pero comprensible para stakeholders no financieros.",
+        "system": "Eres el analista financiero senior de Green Hill Canarias. Hablas con claridad sobre números y proyecciones financieras.",
         "style": "Analista financiero senior"
     },
     "QA/Validation": {
-        "system": "Eres el especialista en calidad y validación de Green Hill Canarias. Respondes sobre procesos, compliance, GMP y estándares regulatorios con autoridad técnica pero lenguaje claro.",
+        "system": "Eres el especialista en calidad y validación de Green Hill Canarias. Respondes sobre procesos, compliance y GMP.",
         "style": "Especialista en calidad"
     },
     "Governance": {
-        "system": "Eres el especialista en gobernanza corporativa de Green Hill Canarias. Hablas sobre estructura organizacional, políticas y marcos regulatorios con precisión legal pero lenguaje empresarial.",
+        "system": "Eres el especialista en gobernanza corporativa de Green Hill Canarias. Hablas sobre estructura organizacional y políticas.",
         "style": "Especialista en gobernanza"
     }
 }
@@ -33,20 +33,115 @@ def _get_langgraph_app():
     except ImportError:
         return None
 
+def extract_natural_response(result, agent: str, query: str):
+    """Extrae y mejora la respuesta de LangGraph para lenguaje natural"""
+    
+    # Diccionario de saludos por agente
+    greetings = {
+        "CEO-DT": "Como CEO de Green Hill Canarias",
+        "FP&A": "Desde la perspectiva financiera",
+        "QA/Validation": "En términos de calidad y validación",
+        "Governance": "Desde el punto de vista de gobernanza"
+    }
+    
+    greeting = greetings.get(agent, "Como parte del equipo de Green Hill Canarias")
+    
+    if isinstance(result, dict):
+        # Extraer final_answer si existe
+        if "final_answer" in result:
+            raw_answer = result["final_answer"]
+        # O buscar en diferentes campos posibles
+        elif "answer" in result:
+            raw_answer = result["answer"]
+        elif "response" in result:
+            raw_answer = result["response"]
+        else:
+            # Si no hay respuesta clara, crear una basada en outputs disponibles
+            outputs = []
+            if result.get("strategy_output", {}).get("analysis"):
+                outputs.append(f"**Estrategia:** {result['strategy_output']['strategic_focus']}")
+            if result.get("market_output", {}).get("analysis"):
+                outputs.append(f"**Mercado:** {result['market_output']['market_opportunity']}")
+            if result.get("finance_output", {}).get("analysis"):
+                outputs.append(f"**Finanzas:** ROI proyectado disponible")
+            
+            if outputs:
+                raw_answer = f"He analizado tu consulta '{query}'. Aquí mis hallazgos:\n\n" + "\n".join(outputs)
+            else:
+                raw_answer = f"He recibido tu consulta '{query}' y estoy procesando la información disponible."
+    else:
+        raw_answer = str(result)
+    
+    # Limpiar formato técnico
+    if raw_answer and len(raw_answer) > 50:
+        # Remover formato markdown excesivo
+        cleaned = raw_answer.replace("###", "").replace("```", "")
+        
+        # Si parece ser una respuesta técnica, humanizarla
+        if "Question:" in cleaned or "Summary:" in cleaned:
+            # Extraer partes útiles y reformatear
+            lines = cleaned.split('\n')
+            useful_lines = [line for line in lines if line.strip() and not line.startswith('#') and 'Question:' not in line]
+            
+            if useful_lines:
+                # Tomar las líneas más informativas
+                key_info = []
+                for line in useful_lines[:5]:  # Primeras 5 líneas útiles
+                    if '🎯' in line or '💰' in line or '📊' in line or '⚙️' in line:
+                        # Limpiar y agregar
+                        clean_line = line.replace('- ', '').replace('|', ',').strip()
+                        if len(clean_line) > 10:
+                            key_info.append(clean_line)
+                
+                if key_info:
+                    formatted_response = f"{greeting}, he analizado tu consulta.\n\n" + "\n\n".join(key_info)
+                else:
+                    formatted_response = f"{greeting}, estoy trabajando en tu consulta '{query}'. Los sistemas están procesando la información."
+            else:
+                formatted_response = f"{greeting}, he recibido tu consulta '{query}'. Permíteme brindarte una respuesta más detallada."
+        else:
+            # Si ya parece natural, solo agregar saludo
+            formatted_response = f"{greeting},\n\n{cleaned}"
+    else:
+        # Respuesta muy corta o vacía
+        formatted_response = f"{greeting}, he recibido tu consulta '{query}'. ¿Podrías ser más específico sobre lo que necesitas saber?"
+    
+    return formatted_response
+
 def run_command(query: str, mode: str, agent: str):
     app = _get_langgraph_app()
+    
     if app is None:
+        agent_config = NATURAL_PROMPTS.get(agent, NATURAL_PROMPTS["CEO-DT"])
         return {
-            "answer": f"🔴 Hola, soy {agent} de Green Hill Canarias. Sistema en modo offline. Tu consulta: '{query or 'estado general'}' será procesada cuando LangGraph esté disponible.",
+            "answer": f"🔴 **Sistema Temporalmente Offline**\n\nHola, soy el {agent_config['style']} de Green Hill Canarias.\n\nHe recibido tu consulta: *'{query or 'estado general'}'*\n\nActualmente el sistema LangGraph está inicializándose. Una vez conectado, podré brindarte un análisis completo y detallado.\n\n**Estado del proyecto:** Fase I — Pilot & Shadow Mode\n\nTe notificaré cuando esté completamente operativo.",
             "refs": ["sistema_offline"]
         }
     
     try:
-        payload = {"question": query, "agent": agent, "command": mode, "state": get_state()}
+        payload = {
+            "question": query or "Estado general del proyecto",
+            "source_type": "investor" if agent == "CEO-DT" else "master",
+            "agent": agent,
+            "command": mode,
+            "state": get_state()
+        }
+        
         result = app.invoke(payload)
-        return {"answer": str(result), "refs": []}
+        
+        # Extraer respuesta natural
+        natural_answer = extract_natural_response(result, agent, query)
+        
+        return {
+            "answer": natural_answer,
+            "refs": result.get("refs", []) if isinstance(result, dict) else []
+        }
+        
     except Exception as e:
-        return {"answer": f"Error: {type(e).__name__}", "refs": ["error"]}
+        return {
+            "answer": f"🔧 **Error Técnico**\n\nSoy el {NATURAL_PROMPTS.get(agent, NATURAL_PROMPTS['CEO-DT'])['style']} de Green Hill Canarias.\n\nHe encontrado un problema al procesar: *'{query or 'tu consulta'}'*\n\n**Error:** {type(e).__name__}\n\nEl equipo técnico está resolviendo esto. Tu consulta ha sido registrada.",
+            "refs": ["error_tecnico"]
+        }
 
 def get_state():
     if os.path.exists(STATE_FILE):
@@ -94,7 +189,7 @@ if st.sidebar.button("💾 Save Variables"):
     set_state("zec_rate", zec)
     st.sidebar.success("Estado actualizado ✅")
 
-tab1,tab2,tab3,tab4=st.tabs(["💬 Chat","📋 Actions","�� Evidence Log","🏛 Governance"])
+tab1,tab2,tab3,tab4=st.tabs(["💬 Chat","📋 Actions","📑 Evidence Log","🏛 Governance"])
 
 with tab1:
     st.header("💬 Chat with Agents")
@@ -107,7 +202,7 @@ with tab1:
         with st.chat_message("user"):
             st.write(turn['q'])
         with st.chat_message("assistant"):
-            st.write(f"**{turn['agent']}:** {turn['a']}")
+            st.write(turn['a'])  # Ya no agregamos el prefijo del agente aquí
             
     q = st.chat_input("Pregunta o instrucción para el agente...")
     
@@ -116,9 +211,10 @@ with tab1:
             st.write(q)
             
         with st.chat_message("assistant"):
-            resp = run_command(q, mode, agent)
-            answer = resp["answer"]
-            st.write(answer)
+            with st.spinner(f"⚡ {agent} está analizando tu consulta..."):
+                resp = run_command(q, mode, agent)
+                answer = resp["answer"]
+                st.write(answer)
                 
         st.session_state["history"].append({"q": q, "a": answer, "agent": agent})
         append_log({"timestamp": datetime.utcnow().isoformat(), "agent": agent, "action": mode, "query": q, "answer": answer, "refs": resp.get("refs",[])})
@@ -126,11 +222,12 @@ with tab1:
 
 with tab2:
     st.header("📋 Tasks & Actions")
-    resp = run_command("", "/action", agent)
-    st.write(resp["answer"])
+    with st.spinner(f"⚡ Consultando tareas con {agent}..."):
+        resp = run_command("", "/action", agent)
+        st.write(resp["answer"])
 
 with tab3:
-    st.header("📑 Evidence Log")
+    st.header("�� Evidence Log")
     df = get_log()
     if not df.empty:
         st.dataframe(df)
@@ -139,4 +236,11 @@ with tab3:
 
 with tab4:
     st.header("🏛 Governance & State")
-    st.json(get_state())
+    col1, col2 = st.columns(2)
+    with col1:
+        st.subheader("Estado del Sistema")
+        st.json(get_state())
+    with col2:
+        st.subheader("Agentes Disponibles")
+        for agent_name, config in NATURAL_PROMPTS.items():
+            st.write(f"**{agent_name}**: {config['style']}")
