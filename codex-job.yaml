@@ -1,0 +1,31 @@
+# codex-job.yaml — One-time permanent Codex Agent instruction
+
+name: ghc_streamlit_hub
+version: 1.0
+
+# This tells the Codex agent: always run this Streamlit app, mount the store, and bind gh_plan_A as default memory.
+
+job:
+  description: "Run the Green Hill Corpus Hub visual interface (Streamlit) as permanent ingestion & memory hub."
+  entrypoint:
+    type: process
+    command: ["streamlit", "run", "app.py", "--server.address", "0.0.0.0"]
+
+  env:
+    GH_PERSIST: "./vector_store/store_A"
+    GH_COLLECTION: "gh_plan_A"
+    GH_EMBED_MODEL: "sentence-transformers/all-MiniLM-L6-v2"
+
+  persistence:
+    vector_store: ./vector_store/store_A
+    collection: gh_plan_A
+
+  security:
+    allow_camera: true
+    allow_file_upload: true
+    allow_paste: true
+
+  outputs:
+    - url: "http://localhost:8501"  # default Streamlit port
+
+# With this, the Codex agent always runs the hub, keeps gh_plan_A mounted, and you can teach it from files, paste, or camera.
