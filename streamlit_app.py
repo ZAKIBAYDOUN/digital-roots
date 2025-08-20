@@ -450,3 +450,4 @@ with tab_code:
 # --- Footer ---
 st.divider()
 st.caption("Green Hill Executive Cockpit v2.1 | Powered by LangGraph & OpenAI")
+# Force update Wed Aug 20 18:07:16 UTC 2025
