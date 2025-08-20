@@ -1,0 +1,30 @@
+# 🌿 Cannabis App Dependencies
+# Core Framework
+streamlit>=1.28.0
+streamlit-authenticator>=0.2.3
+
+# AI & Language Models  
+openai>=1.3.0
+langchain>=0.1.0
+langgraph>=0.0.40
+langsmith>=0.0.60
+
+# Data Processing
+pandas>=2.0.0
+numpy>=1.24.0
+
+# HTTP & APIs
+requests>=2.31.0
+httpx>=0.24.0
+
+# Utilities
+python-dotenv>=1.0.0
+pydantic>=2.0.0
+typing-extensions>=4.7.0
+
+# Cannabis Industry Specific
+# Add any cannabis-specific libraries here
+# cannabis-data-parser>=1.0.0  # Example
+
+# Development & Debugging
+loguru>=0.7.0

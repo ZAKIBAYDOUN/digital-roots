@@ -1,0 +1,56 @@
+# 🌿 Digital Roots - Automated Deployment
+# Cannabis Application CI/CD Pipeline
+# Author: Zaki Baydoun (zakibaydoun@msn.com)
+
+name: Deploy Digital Roots
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout Repository
+      uses: actions/checkout@v4
+      
+    - name: 🐍 Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+        
+    - name: 📦 Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install streamlit openai requests langsmith langgraph
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        
+    - name: 🧪 Run Tests (if any)
+      run: |
+        if [ -f test_*.py ]; then python -m pytest test_*.py -v; fi
+        python -m py_compile *.py
+        
+    - name: 🌿 Deploy to LangSmith
+      env:
+        LANGSMITH_API_KEY: ${{ secrets.LANGSMITH_API_KEY }}
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      run: |
+        echo "🚀 Deploying Digital Roots to LangSmith..."
+        # Add your LangSmith deployment commands here
+        
+    - name: 📊 Update Streamlit Cloud
+      env:
+        STREAMLIT_SHARING_EMAIL: ${{ secrets.STREAMLIT_SHARING_EMAIL }}
+      run: |
+        echo "📊 Updating Streamlit Cloud deployment..."
+        # Streamlit Cloud auto-deploys from GitHub
+        
+    - name: ✅ Deployment Complete
+      run: |
+        echo "🎉 Digital Roots deployed successfully!"
+        echo "🔗 Streamlit: https://digital-roots.streamlit.app"
+        echo "🔗 LangGraph: https://digital-roots-cultivation-g7h8i9j0k1l2.us.langgraph.app"

@@ -1,0 +1,45 @@
+# 🌿 Cannabis App - Git Ignore Rules
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+.coverage
+*.log
+
+# Streamlit
+.streamlit/secrets.toml
+.streamlit/config.toml
+
+# Environment & Secrets
+.env
+.env.*
+secrets.toml
+*.key
+*.pem
+
+# Cannabis Industry Sensitive Data
+patient_data/
+medical_records/
+compliance_reports/
+*.hipaa
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
