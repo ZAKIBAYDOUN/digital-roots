@@ -5,7 +5,7 @@ print("🔍 Verificando restauración de Digital Roots...")
 print("=" * 60)
 
 # Verificar que existe CEO Digital Twin
-with open('/workspaces/digital-roots/streamlit_app.py', 'r') as f:
+with open('/home/runner/work/digital-roots/digital-roots/streamlit_app.py', 'r') as f:
     content = f.read()
 
 checks = {
