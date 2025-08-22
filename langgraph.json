@@ -1,0 +1,117 @@
+{
+  "version": "1.0",
+  "project_name": "digital-roots",
+  "description": "Digital Roots - Cannabis cultivation management platform with AI agents",
+  "api_url": "https://digitalroots-bf3899aefd705f6789c2466e0c9b974d.us.langgraph.app",
+  "agents": {
+    "ghc_dt": {
+      "name": "CEO Digital Twin",
+      "description": "Executive orchestrator for Green Hill Canarias",
+      "icon": "👨‍💼",
+      "module": "agents.ghc_dt",
+      "function": "run_ghc_dt",
+      "model": "gpt-4o-mini",
+      "temperature": 0.2
+    },
+    "strategy": {
+      "name": "Strategy Agent",
+      "description": "Strategic planning and business model analysis",
+      "icon": "🎯",
+      "module": "agents.strategy",
+      "function": "run_strategy",
+      "model": "gpt-4o-mini",
+      "temperature": 0.3
+    },
+    "finance": {
+      "name": "Finance Agent",
+      "description": "Financial analysis and budgeting",
+      "icon": "💰",
+      "module": "agents.finance",
+      "function": "run_finance",
+      "model": "gpt-4o-mini",
+      "temperature": 0.3
+    },
+    "operations": {
+      "name": "Operations Agent",
+      "description": "Operational planning and logistics",
+      "icon": "⚙️",
+      "module": "agents.operations",
+      "function": "run_operations",
+      "model": "gpt-4o-mini",
+      "temperature": 0.3
+    },
+    "market": {
+      "name": "Market Agent",
+      "description": "Market analysis and competitive intelligence",
+      "icon": "📈",
+      "module": "agents.market",
+      "function": "run_market",
+      "model": "gpt-4o-mini",
+      "temperature": 0.3
+    },
+    "compliance": {
+      "name": "Compliance Agent",
+      "description": "Regulatory compliance and legal guidance",
+      "icon": "⚖️",
+      "module": "agents.compliance",
+      "function": "run_compliance",
+      "model": "gpt-4o-mini",
+      "temperature": 0.2
+    },
+    "code": {
+      "name": "Code Agent",
+      "description": "Engineering and technical support",
+      "icon": "💻",
+      "module": "agents.code",
+      "function": "run_code",
+      "model": "gpt-4o-mini",
+      "temperature": 0.3
+    },
+    "innovation": {
+      "name": "Innovation Agent",
+      "description": "Innovation and research development",
+      "icon": "💡",
+      "module": "agents.innovation",
+      "function": "run_innovation",
+      "model": "gpt-4o-mini",
+      "temperature": 0.4
+    },
+    "risk": {
+      "name": "Risk Agent",
+      "description": "Risk assessment and mitigation",
+      "icon": "🛡️",
+      "module": "agents.risk",
+      "function": "run_risk",
+      "model": "gpt-4o-mini",
+      "temperature": 0.2
+    }
+  },
+  "environment": {
+    "required_env_vars": [
+      "OPENAI_API_KEY",
+      "LANGSMITH_API_KEY",
+      "LANGGRAPH_API_URL"
+    ],
+    "optional_env_vars": [
+      "GHC_DT_MODEL",
+      "GHC_DT_TEMPERATURE",
+      "GHC_DT_SYSTEM_PROMPT",
+      "GHC_DT_EVIDENCE_LOG"
+    ]
+  },
+  "server": {
+    "host": "0.0.0.0",
+    "port": 8501,
+    "enable_cors": false,
+    "enable_xsrf_protection": false
+  },
+  "langsmith": {
+    "project_name": "digital-roots-agents",
+    "tags": ["cannabis", "cultivation", "ai-agents", "streamlit"]
+  },
+  "deployment": {
+    "platform": "langgraph-cloud",
+    "region": "us",
+    "auto_deploy": true
+  }
+}
