@@ -12,6 +12,11 @@ This app is designed to ALWAYS work, no matter what!
 - ✅ Emergency fallback modes
 - ✅ Built for cannabis professionals
 
+## ⚙️ Configuration
+- **LangGraph Server**: Configuration defined in `langgraph.json`
+- **9 AI Agents**: CEO Digital Twin, Strategy, Finance, Operations, Market, Compliance, Code, Innovation, Risk
+- **Multi-language Support**: English, Spanish, Icelandic, French
+
 ## 🚀 Live App
 **https://digital-roots.streamlit.app**
 
