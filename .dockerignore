@@ -1,0 +1,51 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env
+pip-log.txt
+pip-delete-this-directory.txt
+.tox
+.coverage
+.coverage.*
+.pytest_cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.mypy_cache
+
+# Development
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Documentation
+README.md
+docs/
+*.md
+
+# Development files
+verify_restoration.py
+fix_url_only.py
+original_streamlit_app.py
+test_*.py
+
+# Environment
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

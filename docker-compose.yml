@@ -1,0 +1,24 @@
+# 🌱 Digital Roots - Docker Compose Configuration
+version: '3.8'
+
+services:
+  digital-roots:
+    build: .
+    container_name: digital-roots-app
+    ports:
+      - "8501:8501"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - LANGSMITH_API_KEY=${LANGSMITH_API_KEY:-}
+      - LANGGRAPH_API_URL=${LANGGRAPH_API_URL:-}
+    volumes:
+      # Mount for development (optional)
+      - ./streamlit_app.py:/app/streamlit_app.py
+      - ./agents:/app/agents
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
