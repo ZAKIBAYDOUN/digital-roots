@@ -2,7 +2,7 @@
   "version": "1.0",
   "project_name": "digital-roots",
   "description": "Digital Roots - Cannabis cultivation management platform with AI agents",
-  "api_url": "https://digitalroots-bf3899aefd705f6789c2466e0c9b974d.us.langgraph.app",
+  "api_url": "https://ground-control-a0ae430fa0b85ca09ebb486704b69f2b.us.langgraph.app",
   "agents": {
     "ghc_dt": {
       "name": "CEO Digital Twin",

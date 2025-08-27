@@ -11,7 +11,7 @@ with open('/home/runner/work/digital-roots/digital-roots/streamlit_app.py', 'r')
 checks = {
     "CEO Digital Twin": "CEO Digital Twin" in content,
     "8 Agentes": all(agent in content for agent in ["strategy", "finance", "operations", "market"]),
-    "URL Correcta": "digitalroots-bf3899aefd705f6789c2466e0c9b974d" in content,
+    "URL Correcta": "ground-control-a0ae430fa0b85ca09ebb486704b69f2b" in content,
     "Multi-idioma": all(lang in content for lang in ["en", "es", "is", "fr"]),
     "Tabs completos": all(tab in content for tab in ["Chat", "Ingest", "Evidence", "Governance"])
 }
