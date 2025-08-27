@@ -22,7 +22,7 @@ from agents.innovation import run_innovation
 from agents.risk import run_risk
 
 # Configuration
-LANGGRAPH_API_URL = "https://digitalroots-bf3899aefd705f6789c2466e0c9b974d.us.langgraph.app"
+LANGGRAPH_API_URL = "https://ground-control-a0ae430fa0b85ca09ebb486704b69f2b.us.langgraph.app"
 
 # Language configuration
 LANGUAGES = {
