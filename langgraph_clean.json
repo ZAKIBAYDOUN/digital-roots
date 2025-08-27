@@ -1,0 +1,18 @@
+{
+  "version": "1.0",
+  "dependencies": ["./requirements.txt"],
+  "graphs": {
+    "agent": "./app/ghc_twin.py:app"
+  },
+  "server": {
+    "app": "./app/api.py:app"
+  },
+  "env": [
+    "OPENAI_API_KEY",
+    "VECTOR_STORE_DIR", 
+    "ALLOWED_ORIGINS",
+    "INGEST_AUTH_TOKEN",
+    "LANGSMITH_API_KEY",
+    "LANGGRAPH_CLOUD_LICENSE_KEY"
+  ]
+}

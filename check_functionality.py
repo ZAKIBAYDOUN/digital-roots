@@ -90,6 +90,9 @@ else:
 # 4. Check deployment workflow
 checks["GitHub Actions"] = Path('.github/workflows/deploy-digital-roots.yml').exists()
 checks["Ingest Workflow"] = Path('.github/workflows/ingest.yml').exists()
+checks["LangGraph App"] = Path('app/ghc_twin.py').exists()
+checks["FastAPI"] = Path('app/api.py').exists()
+checks["LangGraph Dependencies"] = Path('app/requirements.txt').exists()
 
 # 4.1. Check for content directories
 content_dirs = ['docs', 'content']
