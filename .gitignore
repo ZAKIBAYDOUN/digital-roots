@@ -7,6 +7,7 @@ __pycache__/
 *.pyd
 .Python
 env/
+env1/
 venv/
 .venv/
 pip-log.txt
@@ -51,17 +52,15 @@ logs/
 *.suo
 *.sln.docstates
 
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
+# Virtual environments
 env/
+env1/
 venv/
 ENV/
 env.bak/
 venv.bak/
+
+# Build directories
 build/
 develop-eggs/
 dist/
@@ -78,26 +77,20 @@ wheels/
 .installed.cfg
 *.egg
 
-# Virtual environments
-env/
-venv/
-
 # Environment files
 .env
 .env.local
 
-# Vector store
+# Vector store (both production and test)
 vector_store/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Logs
-*.log
+test_vector_store/
 
 # Test coverage
 htmlcov/
 .coverage
 .coverage.*
 .cache
+
+# Temporary files
+*.tmp
+*.temp
