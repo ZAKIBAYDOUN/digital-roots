@@ -1,0 +1,23 @@
+name: Ingest digital-roots ? Twin
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'docs/**'
+      - 'content/**'
+      - '**/*.md'
+      - '**/*.txt'
+      - '**/*.pdf'
+  workflow_dispatch:
+  schedule:
+    - cron: "17 3 * * *"   # daily at 03:17 UTC
+
+jobs:
+  call-global:
+    uses: ZAKIBAYDOUN/GHC-DT/.github/workflows/ghc-global-ingest.yml@main
+    with:
+      source_globs: "docs/**/*.md content/**/*.md **/*.md **/*.txt **/*.pdf"
+      source_type: "public"
+    secrets:
+      TWIN_API_URL: ${{ secrets.TWIN_API_URL }}
+      INGEST_TOKEN: ${{ secrets.INGEST_TOKEN }}

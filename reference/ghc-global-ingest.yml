@@ -1,0 +1,82 @@
+name: GHC – Global Ingest
+on:
+  workflow_call:
+    inputs:
+      source_globs:
+        required: false
+        default: "docs/**/*.md content/**/*.md **/*.md **/*.txt **/*.pdf"
+      source_type:
+        required: false
+        default: "public"
+    secrets:
+      TWIN_API_URL:
+        required: true
+      INGEST_TOKEN:
+        required: false
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: |
+          python -m pip install --upgrade pip
+          pip install pypdf python-frontmatter requests
+      - name: Build batch & POST to Twin API
+        env:
+          TWIN_API_URL: ${{ secrets.TWIN_API_URL }}
+          INGEST_TOKEN: ${{ secrets.INGEST_TOKEN }}
+          REPO_URL: ${{ github.server_url }}/${{ github.repository }}
+          COMMIT_SHA: ${{ github.sha }}
+          SOURCE_GLOBS: ${{ inputs.source_globs }}
+          SOURCE_TYPE: ${{ inputs.source_type }}
+        run: |
+          python - <<'PY'
+          import os, json, requests, sys, shlex
+          from pathlib import Path
+          def read_pdf(path):
+              try:
+                  from pypdf import PdfReader
+                  return "\n".join([(p.extract_text() or "") for p in PdfReader(str(path)).pages])
+              except Exception: return ""
+          def read_md(path):
+              try:
+                  import frontmatter
+                  post = frontmatter.load(path)
+                  return (post.content or ""), {k:str(v) for k,v in (post.metadata or {}).items()}
+              except Exception:
+                  return Path(path).read_text(encoding="utf-8", errors="ignore"), {}
+          exts={'.md','.txt','.pdf'}; globs=shlex.split(os.environ.get("SOURCE_GLOBS",""))
+          src_type=os.environ.get("SOURCE_TYPE","public")
+          texts, metas, seen = [], [], set()
+          for pat in globs:
+              for p in Path(".").rglob(pat):
+                  if not p.is_file() or p.suffix.lower() not in exts: continue
+                  rp = p.resolve()
+                  if rp in seen: continue
+                  seen.add(rp)
+                  if p.suffix.lower()==".pdf": txt, extra = read_pdf(p), {}
+                  elif p.suffix.lower()==".md":  txt, extra = read_md(p)
+                  else: txt, extra = p.read_text("utf-8", errors="ignore"), {}
+                  if not txt.strip(): continue
+                  chunks=[txt[i:i+4000] for i in range(0,len(txt),4000)]
+                  for idx,ch in enumerate(chunks):
+                      texts.append(ch)
+                      metas.append({
+                        "source_repo": os.environ.get("REPO_URL"),
+                        "commit": os.environ.get("COMMIT_SHA"),
+                        "path": str(p),
+                        "chunk": idx,
+                        "source_type": src_type, **extra })
+          if not texts:
+              print("No texts found for ingestion."); sys.exit(0)
+          url=os.environ["TWIN_API_URL"].rstrip("/") + "/api/twin/ingest_texts"
+          headers={"Content-Type":"application/json"}
+          if os.environ.get("INGEST_TOKEN"): headers["X-INGEST-TOKEN"]=os.environ["INGEST_TOKEN"]
+          for i in range(0, len(texts), 50):
+              payload={"texts":texts[i:i+50],"metadatas":metas[i:i+50]}
+              r=requests.post(url, headers=headers, data=json.dumps(payload), timeout=120)
+              r.raise_for_status(); print("Batch", i//50+1, r.status_code)
+          PY
