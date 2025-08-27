@@ -1,5 +1,4 @@
 # 🌱 Digital Roots - Docker Compose Configuration
-version: '3.8'
 
 services:
   digital-roots:
