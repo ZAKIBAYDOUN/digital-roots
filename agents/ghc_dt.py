@@ -7,6 +7,14 @@ from openai import OpenAI
 
 def run_ghc_dt(question: str, state: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """CEO Digital Twin orchestrator implementation"""
+    # Validate input
+    if not question or not question.strip():
+        return {
+            "answer": "Error: Question cannot be empty.",
+            "meta": {"agent": "ghc_dt", "tokens": 0}
+        }
+    question = question.strip()
+
     # Get configuration
     model = os.getenv("GHC_DT_MODEL", "gpt-4o-mini")
     temperature = float(os.getenv("GHC_DT_TEMPERATURE", "0.2"))

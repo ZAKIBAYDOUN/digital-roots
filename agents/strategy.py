@@ -7,6 +7,10 @@ from openai import OpenAI
 
 def run_strategy(question: str, state: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """Strategy agent implementation"""
+    if not question or not question.strip():
+        return {"answer": "Error: Question cannot be empty.", "meta": {"agent": "strategy", "tokens": 0}}
+    question = question.strip()
+
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
         return {
