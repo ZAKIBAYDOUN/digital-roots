@@ -102,32 +102,40 @@ def chat_interface():
     )
     
     # Question input
-    question = st.text_area("Ask your question:", height=100)
-    
-    if st.button("Send") and question:
-        with st.spinner("Processing..."):
-            try:
-                # Call the selected agent
-                agent_func = AGENTS[selected_agent]["func"]
-                result = agent_func(question)
-                
-                # Add to chat history
-                chat_entry = {
-                    "timestamp": datetime.now().isoformat(),
-                    "agent": selected_agent,
-                    "question": question,
-                    "answer": result["answer"],
-                    "tokens": result["meta"]["tokens"]
-                }
-                st.session_state.chat_history.append(chat_entry)
-                st.session_state.evidence_log.append(chat_entry)
-                
-                # Display result
-                st.success(f"**{AGENTS[selected_agent]['name']}** ({result['meta']['tokens']} tokens)")
-                st.write(result["answer"])
-                
-            except Exception as e:
-                st.error(f"Error: {str(e)}")
+    MAX_QUESTION_LENGTH = 10000
+    question = st.text_area("Ask your question:", height=100, max_chars=MAX_QUESTION_LENGTH)
+
+    if st.button("Send"):
+        # Validate input
+        trimmed = question.strip() if question else ""
+        if not trimmed:
+            st.warning("Please enter a question before sending.")
+        elif len(trimmed) < 3:
+            st.warning("Question is too short. Please provide more detail.")
+        else:
+            with st.spinner("Processing..."):
+                try:
+                    # Call the selected agent
+                    agent_func = AGENTS[selected_agent]["func"]
+                    result = agent_func(trimmed)
+
+                    # Add to chat history
+                    chat_entry = {
+                        "timestamp": datetime.now().isoformat(),
+                        "agent": selected_agent,
+                        "question": trimmed,
+                        "answer": result["answer"],
+                        "tokens": result["meta"]["tokens"]
+                    }
+                    st.session_state.chat_history.append(chat_entry)
+                    st.session_state.evidence_log.append(chat_entry)
+
+                    # Display result
+                    st.success(f"**{AGENTS[selected_agent]['name']}** ({result['meta']['tokens']} tokens)")
+                    st.write(result["answer"])
+
+                except Exception as e:
+                    st.error(f"Error: {str(e)}")
     
     # Chat history
     if st.session_state.chat_history:
@@ -160,14 +168,20 @@ def ingest_interface():
     # URL ingestion
     st.subheader("URL Ingestion")
     url = st.text_input("Enter URL to process:")
-    
-    if st.button("Process URL") and url:
-        with st.spinner("Processing URL..."):
-            try:
-                # Simulate URL processing
-                st.success(f"URL processed: {url}")
-            except Exception as e:
-                st.error(f"Error processing URL: {str(e)}")
+
+    if st.button("Process URL"):
+        trimmed_url = url.strip() if url else ""
+        if not trimmed_url:
+            st.warning("Please enter a URL.")
+        elif not trimmed_url.startswith(("http://", "https://")):
+            st.warning("Please enter a valid URL starting with http:// or https://")
+        else:
+            with st.spinner("Processing URL..."):
+                try:
+                    # Simulate URL processing
+                    st.success(f"URL processed: {trimmed_url}")
+                except Exception as e:
+                    st.error(f"Error processing URL: {str(e)}")
 
 def evidence_interface():
     """Evidence and audit log interface"""

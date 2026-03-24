@@ -5,6 +5,10 @@ from openai import OpenAI
 
 def run_innovation(question: str, state: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
     """Innovation agent implementation"""
+    if not question or not question.strip():
+        return {"answer": "Error: Question cannot be empty.", "meta": {"agent": "innovation", "tokens": 0}}
+    question = question.strip()
+
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:
         return {"answer": "OPENAI_API_KEY not configured", "meta": {"agent": "innovation", "tokens": 0}}
